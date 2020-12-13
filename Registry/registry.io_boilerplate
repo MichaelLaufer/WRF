@@ -1,7 +1,7 @@
 
 #  registry.io_boilerplate
 #
-#  Included by registry program 
+#  Included by registry program
 #
 #  Contains a number of standard state variables associated with I/O
 #
@@ -22,8 +22,8 @@ endif
 # see comment above about how to supercede these automatically generated definitions
 include io_boilerplate_temporary.inc
 
-# Output file descriptor for a domain                                           
-state   integer oid            -        -          -         -     -         "oid"                   ""         ""      
+# Output file descriptor for a domain
+state   integer oid            -        -          -         -     -         "oid"                   ""         ""
 rconfig   integer history_interval        namelist,time_control		max_domains    0       h     "history_interval"       ""      "MINUTES"
 rconfig   integer frames_per_outfile      namelist,time_control		max_domains    10      h     "frames_per_outfile"            ""      ""
 rconfig   logical restart                 namelist,time_control		1             .false. h    "restart"              ""      ""
@@ -145,3 +145,8 @@ rconfig logical   ignore_iofields_warning namelist,time_control   1            .
 # nofill = true means only a single write, not the write/read/write sequence
 rconfig logical   ncd_nofill      namelist,time_control 1      .true.
 
+# for PnetCDF specific features
+rconfig logical   pnc_nonblocking_enable   namelist,namelist_pnetcdf 1 .false.
+rconfig integer   pnc_nonblocking_buffer_size   namelist,namelist_pnetcdf 1 1000
+rconfig logical   pnc_burst_buffer_enable  namelist,namelist_pnetcdf 1 .false.
+rconfig character pnc_burst_buffer_dir     namelist,namelist_pnetcdf 1 "."

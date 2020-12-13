@@ -8,18 +8,18 @@
 !*
 !*  AVIATION DIVISION
 !*  ADVANCED COMPUTING BRANCH
-!*  SMS/NNT Version: 2.0.0 
+!*  SMS/NNT Version: 2.0.0
 !*
 !*  This software and its documentation are in the public domain and
-!*  are furnished "as is".  The United States government, its 
-!*  instrumentalities, officers, employees, and agents make no 
-!*  warranty, express or implied, as to the usefulness of the software 
-!*  and documentation for any purpose.  They assume no 
-!*  responsibility (1) for the use of the software and documentation; 
+!*  are furnished "as is".  The United States government, its
+!*  instrumentalities, officers, employees, and agents make no
+!*  warranty, express or implied, as to the usefulness of the software
+!*  and documentation for any purpose.  They assume no
+!*  responsibility (1) for the use of the software and documentation;
 !*  or (2) to provide technical support to users.
-!* 
+!*
 !*  Permission to use, copy, modify, and distribute this software is
-!*  hereby granted, provided that this disclaimer notice appears in 
+!*  hereby granted, provided that this disclaimer notice appears in
 !*  all copies.  All modifications to this software must be clearly
 !*  documented, and are solely the responsibility of the agent making
 !*  the modification.  If significant modifications or enhancements
@@ -50,12 +50,22 @@ subroutine ext_pnc_RealFieldIO(Coll,IO,NCID,VarID,VStart,VCount,Data,Status)
   integer                                    :: stat
 !local
   integer(KIND=MPI_OFFSET_KIND), dimension(NVarDims)    :: VStart_mpi, VCount_mpi
+  logical                                    :: nonblocking
+  integer                                    :: req
+  req = NF_REQ_NULL
   VStart_mpi = VStart
   VCount_mpi = VCount
 
   if(IO == 'write') then
     if(Coll)then
-      stat = NFMPI_PUT_VARA_REAL_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      ! Get value of nonblocking from namelist. ML
+      CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+      if(nonblocking) then
+         ! do non-blocking pnetcdf write REAL. ML
+        stat = NFMPI_BPUT_VARA_REAL(NCID,VarID,VStart_mpi,VCount_mpi,Data,req)
+      else
+        stat = NFMPI_PUT_VARA_REAL_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      end if
     else
       stat = NFMPI_PUT_VARA_REAL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
     end if
@@ -91,12 +101,20 @@ subroutine ext_pnc_DoubleFieldIO(Coll,IO,NCID,VarID,VStart,VCount,Data,Status)
   integer                                    :: stat
 !local
   integer(KIND=MPI_OFFSET_KIND), dimension(NVarDims)    :: VStart_mpi, VCount_mpi
+  logical                                    :: nonblocking
+  integer                                    :: req
+  req = NF_REQ_NULL
   VStart_mpi = VStart
   VCount_mpi = VCount
 
   if(IO == 'write') then
     if(Coll)then
-      stat = NFMPI_PUT_VARA_DOUBLE_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+      if(nonblocking) then
+        stat = NFMPI_BPUT_VARA_DOUBLE(NCID,VarID,VStart_mpi,VCount_mpi,Data,req)
+      else
+        stat = NFMPI_PUT_VARA_DOUBLE_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      end if
    else
       stat = NFMPI_PUT_VARA_DOUBLE(NCID,VarID,VStart_mpi,VCount_mpi,Data)
    endif
@@ -132,12 +150,20 @@ subroutine ext_pnc_IntFieldIO(Coll,IO,NCID,VarID,VStart,VCount,Data,Status)
   integer                                    :: stat
 !local
   integer(KIND=MPI_OFFSET_KIND), dimension(NVarDims)    :: VStart_mpi, VCount_mpi
+  logical                                    :: nonblocking
+  integer                                    :: req
+  req = NF_REQ_NULL
   VStart_mpi = VStart
   VCount_mpi = VCount
 
   if(IO == 'write') then
     if(Coll)then
-      stat = NFMPI_PUT_VARA_INT_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+      if(nonblocking) then
+        stat = NFMPI_BPUT_VARA_INT(NCID,VarID,VStart_mpi,VCount_mpi,Data,req)
+      else
+        stat = NFMPI_PUT_VARA_INT_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Data)
+      end if
     else
       stat = NFMPI_PUT_VARA_INT(NCID,VarID,VStart_mpi,VCount_mpi,Data)
     endif
@@ -175,6 +201,9 @@ subroutine ext_pnc_LogicalFieldIO(Coll,IO,NCID,VarID,VStart,VCount,Data,Status)
   integer                                                        :: i,j,k
 !local
   integer(KIND=MPI_OFFSET_KIND), dimension(NVarDims)    :: VStart_mpi, VCount_mpi
+  logical                                    :: nonblocking
+  integer                                    :: req
+  req = NF_REQ_NULL
   VStart_mpi = VStart
   VCount_mpi = VCount
 
@@ -198,8 +227,13 @@ subroutine ext_pnc_LogicalFieldIO(Coll,IO,NCID,VarID,VStart,VCount,Data,Status)
       enddo
     enddo
     if(Coll)then
-      stat = NFMPI_PUT_VARA_INT_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Buffer)
-   else
+      CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+      if(nonblocking) then
+        stat = NFMPI_BPUT_VARA_INT(NCID,VarID,VStart_mpi,VCount_mpi,Buffer,req)
+      else
+        stat = NFMPI_PUT_VARA_INT_ALL(NCID,VarID,VStart_mpi,VCount_mpi,Buffer)
+      end if
+    else
       stat = NFMPI_PUT_VARA_INT(NCID,VarID,VStart_mpi,VCount_mpi,Buffer)
    end if
   else

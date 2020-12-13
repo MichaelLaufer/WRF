@@ -8,18 +8,18 @@
 !*
 !*  AVIATION DIVISION
 !*  ADVANCED COMPUTING BRANCH
-!*  SMS/NNT Version: 2.0.0 
+!*  SMS/NNT Version: 2.0.0
 !*
 !*  This software and its documentation are in the public domain and
-!*  are furnished "as is".  The United States government, its 
-!*  instrumentalities, officers, employees, and agents make no 
-!*  warranty, express or implied, as to the usefulness of the software 
-!*  and documentation for any purpose.  They assume no 
-!*  responsibility (1) for the use of the software and documentation; 
+!*  are furnished "as is".  The United States government, its
+!*  instrumentalities, officers, employees, and agents make no
+!*  warranty, express or implied, as to the usefulness of the software
+!*  and documentation for any purpose.  They assume no
+!*  responsibility (1) for the use of the software and documentation;
 !*  or (2) to provide technical support to users.
-!* 
+!*
 !*  Permission to use, copy, modify, and distribute this software is
-!*  hereby granted, provided that this disclaimer notice appears in 
+!*  hereby granted, provided that this disclaimer notice appears in
 !*  all copies.  All modifications to this software must be clearly
 !*  documented, and are solely the responsibility of the agent making
 !*  the modification.  If significant modifications or enhancements
@@ -84,9 +84,9 @@ module wrf_data_pnc
     character (VarNameLen), pointer       :: VarNames(:)
     integer                               :: CurrentVariable  !Only used for read
     integer                               :: NumVars
-! first_operation is set to .TRUE. when a new handle is allocated 
-! or when open-for-write or open-for-read are committed.  It is set 
-! to .FALSE. when the first field is read or written.  
+! first_operation is set to .TRUE. when a new handle is allocated
+! or when open-for-write or open-for-read are committed.  It is set
+! to .FALSE. when the first field is read or written.
     logical                               :: first_operation
 ! Whether pnetcdf file is in collective (.true.) or independent mode
 ! Collective mode is the default.
@@ -196,7 +196,7 @@ subroutine allocHandle(DataHandle,DH,Comm,Status)
     endif
     if(i==WrfDataHandleMax) then
       Status = WRF_WARN_TOO_MANY_FILES
-      write(msg,*) 'Warning TOO MANY FILES in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'Warning TOO MANY FILES in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       write(msg,*) 'Did you call ext_pnc_ioinit?'
       call wrf_debug ( WARN , TRIM(msg))
@@ -324,10 +324,10 @@ subroutine DateCheck(Date,Status)
   include 'wrf_status_codes.h'
   character*(*) ,intent(in)      :: Date
   integer       ,intent(out)     :: Status
-  
+
   if(len(Date) /= DateStrLen) then
     Status = WRF_WARN_DATESTR_BAD_LENGTH
-  else  
+  else
     Status = WRF_NO_ERR
   endif
   return
@@ -375,7 +375,7 @@ subroutine GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
   call DateCheck(DateStr,Status)
   if(Status /= WRF_NO_ERR) then
     Status =  WRF_WARN_DATESTR_ERROR
-    write(msg,*) 'Warning DATE STRING ERROR in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DATE STRING ERROR in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -390,7 +390,7 @@ subroutine GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
       TimeIndex = TimeIndex +1
       if(TimeIndex > MaxTimes) then
         Status = WRF_WARN_TIME_EOF
-        write(msg,*) 'Warning TIME EOF in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning TIME EOF in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -404,7 +404,7 @@ subroutine GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
     stat = NFMPI_PUT_VARA_TEXT_ALL(DH%NCID,DH%TimesVarID,VStart,VCount,DateStr)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -417,7 +417,7 @@ subroutine GetTimeIndex(IO,DataHandle,DateStr,TimeIndex,Status)
       endif
       if(i==MaxTimes) then
         Status = WRF_WARN_TIME_NF
-        write(msg,*) 'Warning TIME ',DateStr,' NOT FOUND in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning TIME ',DateStr,' NOT FOUND in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -652,7 +652,7 @@ subroutine netcdf_err(err,Status)
   if( err==NF_NOERR )then
     Status = WRF_NO_ERR
   else
-    errmsg = NFMPI_STRERROR(err) 
+    errmsg = NFMPI_STRERROR(err)
     write(msg,*) 'NetCDF error: ',errmsg
     call wrf_debug ( WARN , TRIM(msg))
     Status = WRF_WARN_NETCDF
@@ -813,14 +813,14 @@ subroutine reorder (MemoryOrder,MemO)
   endif
   return
 end subroutine reorder
-  
-! Returns .TRUE. iff it is OK to write time-independent domain metadata to the 
-! file referenced by DataHandle.  If DataHandle is invalid, .FALSE. is 
-! returned.  
+
+! Returns .TRUE. iff it is OK to write time-independent domain metadata to the
+! file referenced by DataHandle.  If DataHandle is invalid, .FALSE. is
+! returned.
 LOGICAL FUNCTION ncd_ok_to_put_dom_ti( DataHandle )
     USE wrf_data_pnc
     include 'wrf_status_codes.h'
-    INTEGER, INTENT(IN) :: DataHandle 
+    INTEGER, INTENT(IN) :: DataHandle
     CHARACTER*80 :: fname
     INTEGER :: filestate
     INTEGER :: Status
@@ -841,13 +841,13 @@ LOGICAL FUNCTION ncd_ok_to_put_dom_ti( DataHandle )
     RETURN
 END FUNCTION ncd_ok_to_put_dom_ti
 
-! Returns .TRUE. iff it is OK to read time-independent domain metadata from the 
-! file referenced by DataHandle.  If DataHandle is invalid, .FALSE. is 
-! returned.  
+! Returns .TRUE. iff it is OK to read time-independent domain metadata from the
+! file referenced by DataHandle.  If DataHandle is invalid, .FALSE. is
+! returned.
 LOGICAL FUNCTION ncd_ok_to_get_dom_ti( DataHandle )
     USE wrf_data_pnc
     include 'wrf_status_codes.h'
-    INTEGER, INTENT(IN) :: DataHandle 
+    INTEGER, INTENT(IN) :: DataHandle
     CHARACTER*80 :: fname
     INTEGER :: filestate
     INTEGER :: Status
@@ -866,12 +866,12 @@ LOGICAL FUNCTION ncd_ok_to_get_dom_ti( DataHandle )
     RETURN
 END FUNCTION ncd_ok_to_get_dom_ti
 
-! Returns .TRUE. iff nothing has been read from or written to the file 
-! referenced by DataHandle.  If DataHandle is invalid, .FALSE. is returned.  
+! Returns .TRUE. iff nothing has been read from or written to the file
+! referenced by DataHandle.  If DataHandle is invalid, .FALSE. is returned.
 LOGICAL FUNCTION ncd_is_first_operation( DataHandle )
     USE wrf_data_pnc
     INCLUDE 'wrf_status_codes.h'
-    INTEGER, INTENT(IN) :: DataHandle 
+    INTEGER, INTENT(IN) :: DataHandle
     TYPE(wrf_data_handle) ,POINTER :: DH
     INTEGER :: Status
     LOGICAL :: retval
@@ -967,14 +967,14 @@ subroutine ext_pnc_open_for_read_begin( FileName, Comm, IOComm, SysDepInfo, Data
   character (NF_MAX_NAME)                :: Name
 
   if(WrfIOnotInitialized) then
-    Status = WRF_IO_NOT_INITIALIZED 
+    Status = WRF_IO_NOT_INITIALIZED
     write(msg,*) 'ext_pnc_ioinit was not called ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
     return
   endif
   call allocHandle(DataHandle,DH,Comm,Status)
   if(Status /= WRF_NO_ERR) then
-    write(msg,*) 'Fatal ALLOCATION ERROR in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal ALLOCATION ERROR in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -1005,7 +1005,7 @@ subroutine ext_pnc_open_for_read_begin( FileName, Comm, IOComm, SysDepInfo, Data
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
-  stat = NFMPI_INQ_DIMLEN(DH%NCID,DimIDs(1),VLen(1))  
+  stat = NFMPI_INQ_DIMLEN(DH%NCID,DimIDs(1),VLen(1))
   call netcdf_err(stat,Status)
   if(Status /= WRF_NO_ERR) then
     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
@@ -1059,7 +1059,7 @@ subroutine ext_pnc_open_for_read_begin( FileName, Comm, IOComm, SysDepInfo, Data
       NumVars              = NumVars+1
       DH%VarNames(NumVars) = Name
       DH%VarIDs(NumVars)   = i
-    endif      
+    endif
   enddo
   DH%NumVars         = NumVars
   DH%NumberTimes     = VLen(2)
@@ -1100,14 +1100,14 @@ subroutine ext_pnc_open_for_update( FileName, Comm, IOComm, SysDepInfo, DataHand
   character (NF_MAX_NAME)                :: Name
 
   if(WrfIOnotInitialized) then
-    Status = WRF_IO_NOT_INITIALIZED 
+    Status = WRF_IO_NOT_INITIALIZED
     write(msg,*) 'ext_pnc_ioinit was not called ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
     return
   endif
   call allocHandle(DataHandle,DH,Comm,Status)
   if(Status /= WRF_NO_ERR) then
-    write(msg,*) 'Fatal ALLOCATION ERROR in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal ALLOCATION ERROR in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -1138,7 +1138,7 @@ subroutine ext_pnc_open_for_update( FileName, Comm, IOComm, SysDepInfo, DataHand
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
-  stat = NFMPI_INQ_DIMLEN(DH%NCID,DimIDs(1),VLen(1))  
+  stat = NFMPI_INQ_DIMLEN(DH%NCID,DimIDs(1),VLen(1))
   call netcdf_err(stat,Status)
   if(Status /= WRF_NO_ERR) then
     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
@@ -1192,7 +1192,7 @@ subroutine ext_pnc_open_for_update( FileName, Comm, IOComm, SysDepInfo, DataHand
       NumVars              = NumVars+1
       DH%VarNames(NumVars) = Name
       DH%VarIDs(NumVars)   = i
-    endif      
+    endif
   enddo
   DH%NumVars         = NumVars
   DH%NumberTimes     = VLen(2)
@@ -1227,9 +1227,14 @@ SUBROUTINE ext_pnc_open_for_write_begin(FileName,Comm,IOComm,SysDepInfo,DataHand
   character*1024                    :: newFileName
   integer                           :: gridid
   integer local_communicator_x, ntasks_x
+  ! Pnetcdf nonblocking and burst buffer features. ML
+  ! logical                           :: nonblocking
+  ! integer(kind=MPI_OFFSET_KIND)     :: bufsize
+  logical                           :: BurstBufferEnable
+  character*128                     :: BurstBufferDir
 
   if(WrfIOnotInitialized) then
-    Status = WRF_IO_NOT_INITIALIZED 
+    Status = WRF_IO_NOT_INITIALIZED
     write(msg,*) 'ext_pnc_open_for_write_begin: ext_pnc_ioinit was not called ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
     return
@@ -1249,6 +1254,13 @@ SUBROUTINE ext_pnc_open_for_write_begin(FileName,Comm,IOComm,SysDepInfo,DataHand
   CALL mpi_info_set(info,"romio_ds_write","disable", ierr) ; write(0,*)'mpi_info_set write returns ',ierr
   CALL mpi_info_set(info,"romio_ds_read","disable", ierr) ; write(0,*)'mpi_info_set read returns ',ierr
 # endif
+  ! Pnetcdf burst buffer feature. ML
+  CALL nl_get_pnc_burst_buffer_enable(1,   BurstBufferEnable)
+  if (BurstBufferEnable) then
+    CALL mpi_info_set(info,"nc_burst_buf","enable", ierr) ; write(0,*)'mpi_info_set write returns ',ierr
+    CALL nl_get_pnc_burst_buffer_dir(1,   BurstBufferDir)
+    CALL mpi_info_set(info,"nc_burst_buf_dirname",TRIM(ADJUSTL(BurstBufferDir)), ierr) ; write(0,*)'mpi_info_set write returns ',ierr
+  endif
 
 
 ! Remove the dash/underscore change to filenames for pnetcdf...
@@ -1270,7 +1282,7 @@ SUBROUTINE ext_pnc_open_for_write_begin(FileName,Comm,IOComm,SysDepInfo,DataHand
   stat = NFMPI_CREATE(Comm, FileName, IOR(NF_CLOBBER, NF_64BIT_OFFSET), info, DH%NCID)
   call mpi_info_free( info, ierr)
 !
-!!!!!!!!!!!!!!! 
+!!!!!!!!!!!!!!!
 #endif
 
   call netcdf_err(stat,Status)
@@ -1350,9 +1362,12 @@ SUBROUTINE ext_pnc_open_for_write_commit(DataHandle, Status)
   type(wrf_data_handle),pointer     :: DH
   integer                           :: i
   integer                           :: stat
+  logical                           :: nonblocking
+  integer                           :: bufsize
+  integer(kind=MPI_OFFSET_KIND)     :: bufsizeOffsetKind,bufsizeBytes
 
   if(WrfIOnotInitialized) then
-    Status = WRF_IO_NOT_INITIALIZED 
+    Status = WRF_IO_NOT_INITIALIZED
     write(msg,*) 'ext_pnc_open_for_write_commit: ext_pnc_ioinit was not called ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
     return
@@ -1360,7 +1375,7 @@ SUBROUTINE ext_pnc_open_for_write_commit(DataHandle, Status)
   call GetDH(DataHandle,DH,Status)
   if(Status /= WRF_NO_ERR) then
     write(msg,*) 'Warning Status = ',Status,' in ext_pnc_open_for_write_commit ',__FILE__,', line', __LINE__
-    call wrf_debug ( WARN , TRIM(msg)) 
+    call wrf_debug ( WARN , TRIM(msg))
     return
   endif
   stat = NFMPI_ENDDEF(DH%NCID)
@@ -1369,6 +1384,20 @@ SUBROUTINE ext_pnc_open_for_write_commit(DataHandle, Status)
     write(msg,*) 'NetCDF error (',stat,') from NFMPI_ENDDEF in ext_pnc_open_for_write_commit ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
+  endif
+   ! Pnetcdf buffered nonblocking writes. ML
+  CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+  if(nonblocking) then
+    CALL nl_get_pnc_nonblocking_buffer_size(1,   bufsize)
+    bufsizeOffsetKind = int(bufsize, kind=MPI_OFFSET_KIND)
+    bufsizeBytes = bufsizeOffsetKind*1048576
+    stat = NFMPI_BUFFER_ATTACH(DH%NCID, bufsizeBytes)
+    call netcdf_err(stat,Status)
+    if(Status /= WRF_NO_ERR) then
+      write(msg,*) 'NetCDF error (',stat,') from NFMPI_BUFFER_ATTACH in ext_pnc_open_for_write_commit ',__FILE__,', line', __LINE__
+      call wrf_debug ( WARN , TRIM(msg))
+      return
+    endif
   endif
   DH%FileStatus  = WRF_FILE_OPENED_FOR_WRITE
   DH%first_operation  = .TRUE.
@@ -1385,6 +1414,7 @@ subroutine ext_pnc_ioclose(DataHandle, Status)
   integer              ,intent(out) :: Status
   type(wrf_data_handle),pointer     :: DH
   integer                           :: stat
+  logical                           :: nonblocking
 
   call GetDH(DataHandle,DH,Status)
   if(Status /= WRF_NO_ERR) then
@@ -1401,7 +1431,25 @@ subroutine ext_pnc_ioclose(DataHandle, Status)
     write(msg,*) 'Warning TRY TO CLOSE DRYRUN in ext_pnc_ioclose ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
-    continue    
+    CALL nl_get_pnc_nonblocking_enable(1,   nonblocking)
+    if(nonblocking) then
+       ! Flush all non blocking IO to disk. ML
+      stat = NFMPI_WAIT_ALL(DH%NCID, NF_REQ_ALL, NF_REQ_NULL, NF_REQ_NULL)
+      call netcdf_err(stat,Status)
+      if(Status /= WRF_NO_ERR) then
+        write(msg,*) 'PNetCDF error during flush in ext_pnc_ioclose ',__FILE__,', line', __LINE__
+        call wrf_debug ( WARN , TRIM(msg))
+        return
+      endif
+      ! Detach (unallocate) buffer for pnetCDF buffered non blocking write. ML
+      stat = NFMPI_BUFFER_DETACH(DH%NCID)
+      call netcdf_err(stat,Status)
+      if(Status /= WRF_NO_ERR) then
+        write(msg,*) 'PNetCDF error during detach of non blocking buffer in ext_pnc_ioclose ',__FILE__,', line', __LINE__
+        call wrf_debug ( WARN , TRIM(msg))
+        return
+      endif
+    endif
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ) then
     continue
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_UPDATE) then
@@ -1625,13 +1673,13 @@ subroutine ext_pnc_ioexit(Status)
   integer                           :: i
   integer                           :: stat
   if(WrfIOnotInitialized) then
-    Status = WRF_IO_NOT_INITIALIZED 
+    Status = WRF_IO_NOT_INITIALIZED
     write(msg,*) 'ext_pnc_ioinit was not called ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
     return
   endif
   do i=1,WrfDataHandleMax
-    CALL deallocHandle( i , stat ) 
+    CALL deallocHandle( i , stat )
   enddo
   return
 end subroutine ext_pnc_ioexit
@@ -1643,14 +1691,14 @@ subroutine ext_pnc_get_dom_ti_real(DataHandle,Element,Data,Count,OutCount,Status
 #define TYPE_OUTCOUNT integer,intent(out) :: OutCOunt
 #define TYPE_BUFFER  real,allocatable :: Buffer(:)
 #define NF_TYPE NF_FLOAT
-#define NF_ROUTINE NFMPI_GET_ATT_REAL 
+#define NF_ROUTINE NFMPI_GET_ATT_REAL
 #define COPY   Data(1:min(Len,Count)) = Buffer(1:min(Len,Count))
 #include "ext_pnc_get_dom_ti.code"
 end subroutine ext_pnc_get_dom_ti_real
 
 subroutine ext_pnc_get_dom_ti_integer(DataHandle,Element,Data,Count,OutCount,Status)
-#undef ROUTINE_TYPE 
-#undef TYPE_DATA 
+#undef ROUTINE_TYPE
+#undef TYPE_DATA
 #undef TYPE_BUFFER
 #undef NF_TYPE
 #undef NF_ROUTINE
@@ -1665,8 +1713,8 @@ subroutine ext_pnc_get_dom_ti_integer(DataHandle,Element,Data,Count,OutCount,Sta
 end subroutine ext_pnc_get_dom_ti_integer
 
 subroutine ext_pnc_get_dom_ti_double(DataHandle,Element,Data,Count,OutCount,Status)
-#undef ROUTINE_TYPE 
-#undef TYPE_DATA 
+#undef ROUTINE_TYPE
+#undef TYPE_DATA
 #undef TYPE_BUFFER
 #undef NF_TYPE
 #undef NF_ROUTINE
@@ -1681,8 +1729,8 @@ subroutine ext_pnc_get_dom_ti_double(DataHandle,Element,Data,Count,OutCount,Stat
 end subroutine ext_pnc_get_dom_ti_double
 
 subroutine ext_pnc_get_dom_ti_logical(DataHandle,Element,Data,Count,OutCount,Status)
-#undef ROUTINE_TYPE 
-#undef TYPE_DATA 
+#undef ROUTINE_TYPE
+#undef TYPE_DATA
 #undef TYPE_BUFFER
 #undef NF_TYPE
 #undef NF_ROUTINE
@@ -1715,8 +1763,8 @@ subroutine ext_pnc_get_dom_ti_char(DataHandle,Element,Data,Status)
 end subroutine ext_pnc_get_dom_ti_char
 
 subroutine ext_pnc_put_dom_ti_real(DataHandle,Element,Data,Count,Status)
-#undef ROUTINE_TYPE 
-#undef TYPE_DATA 
+#undef ROUTINE_TYPE
+#undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
 #undef ARGS
@@ -1730,7 +1778,7 @@ subroutine ext_pnc_put_dom_ti_real(DataHandle,Element,Data,Count,Status)
 end subroutine ext_pnc_put_dom_ti_real
 
 subroutine ext_pnc_put_dom_ti_integer(DataHandle,Element,Data,Count,Status)
-#undef ROUTINE_TYPE 
+#undef ROUTINE_TYPE
 #undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
@@ -1745,7 +1793,7 @@ subroutine ext_pnc_put_dom_ti_integer(DataHandle,Element,Data,Count,Status)
 end subroutine ext_pnc_put_dom_ti_integer
 
 subroutine ext_pnc_put_dom_ti_double(DataHandle,Element,Data,Count,Status)
-#undef ROUTINE_TYPE 
+#undef ROUTINE_TYPE
 #undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
@@ -1760,7 +1808,7 @@ subroutine ext_pnc_put_dom_ti_double(DataHandle,Element,Data,Count,Status)
 end subroutine ext_pnc_put_dom_ti_double
 
 subroutine ext_pnc_put_dom_ti_logical(DataHandle,Element,Data,Count,Status)
-#undef ROUTINE_TYPE 
+#undef ROUTINE_TYPE
 #undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
@@ -1775,7 +1823,7 @@ subroutine ext_pnc_put_dom_ti_logical(DataHandle,Element,Data,Count,Status)
 end subroutine ext_pnc_put_dom_ti_logical
 
 subroutine ext_pnc_put_dom_ti_char(DataHandle,Element,Data,Status)
-#undef ROUTINE_TYPE 
+#undef ROUTINE_TYPE
 #undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
@@ -1819,7 +1867,7 @@ subroutine ext_pnc_put_var_td_real(DataHandle,Element,DateStr,Var,Data,Count,Sta
 #define NF_ROUTINE NFMPI_PUT_VARA_REAL_ALL
 #define NF_TYPE NF_FLOAT
 #define LENGTH Count
-#define ARG 
+#define ARG
 #include "ext_pnc_put_var_td.code"
 end subroutine ext_pnc_put_var_td_real
 
@@ -1853,7 +1901,7 @@ subroutine ext_pnc_put_var_td_double(DataHandle,Element,DateStr,Var,Data,Count,S
 #define NF_ROUTINE NFMPI_PUT_VARA_DOUBLE_ALL
 #define NF_TYPE NF_DOUBLE
 #define LENGTH Count
-#define ARG 
+#define ARG
 #include "ext_pnc_put_var_td.code"
 end subroutine ext_pnc_put_var_td_double
 
@@ -1868,7 +1916,7 @@ subroutine ext_pnc_put_var_ti_integer(DataHandle,Element,Var,Data,Count,Status)
 #define TYPE_DATA  integer ,intent(in) :: Data(*)
 #define TYPE_COUNT integer ,intent(in) :: Count
 #define NF_ROUTINE NFMPI_PUT_ATT_INT
-#define ARGS NF_INT,i2offset(Count),Data 
+#define ARGS NF_INT,i2offset(Count),Data
 #include "ext_pnc_put_var_ti.code"
 end subroutine ext_pnc_put_var_ti_integer
 
@@ -1887,7 +1935,7 @@ subroutine ext_pnc_put_var_td_integer(DataHandle,Element,DateStr,Var,Data,Count,
 #define NF_ROUTINE NFMPI_PUT_VARA_INT_ALL
 #define NF_TYPE NF_INT
 #define LENGTH Count
-#define ARG 
+#define ARG
 #include "ext_pnc_put_var_td.code"
 end subroutine ext_pnc_put_var_td_integer
 
@@ -1896,7 +1944,7 @@ subroutine ext_pnc_put_var_ti_logical(DataHandle,Element,Var,Data,Count,Status)
 #undef TYPE_DATA
 #undef TYPE_COUNT
 #undef NF_ROUTINE
-#undef ARGS 
+#undef ARGS
 #define ROUTINE_TYPE 'LOGICAL'
 #define TYPE_DATA  logical ,intent(in) :: Data(*)
 #define TYPE_COUNT integer ,intent(in) :: Count
@@ -1921,7 +1969,7 @@ subroutine ext_pnc_put_var_td_logical(DataHandle,Element,DateStr,Var,Data,Count,
 #define NF_TYPE NF_INT
 #define LOG
 #define LENGTH Count
-#define ARG 
+#define ARG
 #include "ext_pnc_put_var_td.code"
 end subroutine ext_pnc_put_var_td_logical
 
@@ -1934,7 +1982,7 @@ subroutine ext_pnc_put_var_ti_char(DataHandle,Element,Var,Data,Status)
 #undef LOG
 #define ROUTINE_TYPE 'CHAR'
 #define TYPE_DATA  character*(*) ,intent(in) :: Data
-#define TYPE_COUNT 
+#define TYPE_COUNT
 #define NF_ROUTINE NFMPI_PUT_ATT_TEXT
 #define ARGS i2offset(len_trim(Data)),trim(Data)
 #define CHAR_TYPE
@@ -1953,7 +2001,7 @@ subroutine ext_pnc_put_var_td_char(DataHandle,Element,DateStr,Var,Data,Status)
 #undef LOG
 #define ROUTINE_TYPE 'CHAR'
 #define TYPE_DATA  character*(*) ,intent(in) :: Data
-#define TYPE_COUNT 
+#define TYPE_COUNT
 #define NF_ROUTINE NFMPI_PUT_VARA_TEXT_ALL
 #define NF_TYPE NF_CHAR
 #define LENGTH len(Data)
@@ -2144,7 +2192,7 @@ subroutine ext_pnc_get_var_ti_char(DataHandle,Element,Var,Data,Status)
 #define TYPE_OUTCOUNT
 #define NF_TYPE NF_CHAR
 #define NF_ROUTINE NFMPI_GET_ATT_TEXT
-#define COPY 
+#define COPY
 #define CHAR_TYPE
 #include "ext_pnc_get_var_ti.code"
 #undef CHAR_TYPE
@@ -2361,7 +2409,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
   endif
   call DateCheck(DateStr,Status)
   if(Status /= WRF_NO_ERR) then
-    write(msg,*) 'Warning DATE STRING ERROR |',DateStr,'| in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DATE STRING ERROR |',DateStr,'| in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -2399,17 +2447,17 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
 
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ) then
     Status = WRF_WARN_WRITE_RONLY_FILE
-    write(msg,*) 'Warning WRITE READ ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning WRITE READ ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     do NVar=1,MaxVars
       if(DH%VarNames(NVar) == VarName ) then
         Status = WRF_WARN_2DRYRUNS_1VARIABLE
-        write(msg,*) 'Warning 2 DRYRUNS 1 VARIABLE (',TRIM(VarName),') in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning 2 DRYRUNS 1 VARIABLE (',TRIM(VarName),') in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       elseif(DH%VarNames(NVar) == NO_NAME) then
@@ -2418,7 +2466,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
         exit
       elseif(NVar == MaxVars) then
         Status = WRF_WARN_TOO_MANY_VARIABLES
-        write(msg,*) 'Warning TOO MANY VARIABLES in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning TOO MANY VARIABLES in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -2440,7 +2488,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
             exit
           elseif(i == MaxDims) then
             Status = WRF_WARN_TOO_MANY_DIMS
-            write(msg,*) 'Warning TOO MANY DIMENSIONS (',i,') in (',TRIM(VarName),') ',__FILE__,', line', __LINE__ 
+            write(msg,*) 'Warning TOO MANY DIMENSIONS (',i,') in (',TRIM(VarName),') ',__FILE__,', line', __LINE__
             call wrf_debug ( WARN , TRIM(msg))
             return
           endif
@@ -2455,7 +2503,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
             else
               Status = WRF_WARN_DIMNAME_REDEFINED
               write(msg,*) 'Warning DIM ',i,', NAME ',TRIM(DH%DimNames(i)),' REDEFINED  by var ', &
-                           TRIM(Var),' ',DH%DimLengths(i),Length_global(j) ,' in ', __FILE__ ,' line', __LINE__ 
+                           TRIM(Var),' ',DH%DimLengths(i),Length_global(j) ,' in ', __FILE__ ,' line', __LINE__
               call wrf_debug ( WARN , TRIM(msg))
               return
             endif
@@ -2476,7 +2524,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
               exit
             elseif(i == MaxDims) then
               Status = WRF_WARN_TOO_MANY_DIMS
-              write(msg,*) 'Warning TOO MANY DIMENSIONS in ',__FILE__,', line', __LINE__ 
+              write(msg,*) 'Warning TOO MANY DIMENSIONS in ',__FILE__,', line', __LINE__
               call wrf_debug ( WARN , TRIM(msg))
               return
             endif
@@ -2498,7 +2546,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
         XType = NF_INT
       case default
         Status = WRF_WARN_DATA_TYPE_NOT_FOUND
-        write(msg,*) 'Warning DATA TYPE NOT FOUND in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning DATA TYPE NOT FOUND in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
     end select
@@ -2515,7 +2563,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
     stat = NFMPI_PUT_ATT_INT(NCID,VarID,'FieldType',NF_INT,i2offset(1),FieldType)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'ext_pnc_write_field: NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'ext_pnc_write_field: NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -2524,7 +2572,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
     stat = NFMPI_PUT_ATT_TEXT(NCID,VarID,'MemoryOrder',i2offset(3),UCMemO)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'ext_pnc_write_field: NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'ext_pnc_write_field: NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -2534,7 +2582,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
         exit
       elseif(NVar == DH%NumVars) then
         Status = WRF_WARN_VAR_NF
-        write(msg,*) 'Warning VARIABLE NOT FOUND in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning VARIABLE NOT FOUND in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -2544,7 +2592,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
       if(Length_global(j) /= DH%VarDimLens(j,NVar) .AND. DH%FileStatus /= WRF_FILE_OPENED_FOR_UPDATE ) then
         Status = WRF_WARN_WRTLEN_NE_DRRUNLEN
         write(msg,*) 'Warning LENGTH != DRY RUN LENGTH for |',   &
-                     VarName,'| dim ',j,' in ',__FILE__,', line', __LINE__ 
+                     VarName,'| dim ',j,' in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         write(msg,*) '   LENGTH ',Length_global(j),' DRY RUN LENGTH ',DH%VarDimLens(j,NVar)
         call wrf_debug ( WARN , TRIM(msg))
@@ -2554,7 +2602,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
       elseif(PatchStart(j) < lMemoryStart(j)) then
         Status = WRF_WARN_DIMENSION_ERROR
         write(msg,*) 'Warning DIMENSION ERROR for |',VarName,    &
-                     '| in ',__FILE__,', line', __LINE__ 
+                     '| in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -2602,7 +2650,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
     call FieldIO('write',DataHandle,DateStr,StoredStart,Length,MemoryOrder, &
                   FieldType,NCID,VarID,XField,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'Warning Status = ',Status,' in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'Warning Status = ',Status,' in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -2615,7 +2663,7 @@ subroutine ext_pnc_write_field(DataHandle,DateStr,Var,Field,FieldType,Comm, &
     endif
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , TRIM(msg))
   endif
   DH%first_operation  = .FALSE.
@@ -2687,7 +2735,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
   call DateCheck(DateStr,Status)
   if(Status /= WRF_NO_ERR) then
     write(msg,*) 'Warning DATE STRING ERROR |',TRIM(DateStr),'| for |',TRIM(Var), &
-                 '| in ext_pnc_read_field ',__FILE__,', line', __LINE__ 
+                 '| in ext_pnc_read_field ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -2700,18 +2748,18 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
 ! jm it is okay to have a dry run read. means read is called between ofrb and ofrc. Just return.
 !    Status = WRF_WARN_DRYRUN_READ
-!    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__ 
+!    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__
 !    call wrf_debug ( WARN , TRIM(msg))
     Status = WRF_NO_ERR
     RETURN
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ .OR. DH%FileStatus == WRF_FILE_OPENED_FOR_UPDATE ) then
     NCID = DH%NCID
@@ -2731,14 +2779,14 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
     stat = NFMPI_INQ_VAR(NCID,VarID,Name,XType,StoredDim,VDimIDs,NAtts)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
     stat = NFMPI_GET_ATT_INT(NCID,VarID,'FieldType',FType)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -2756,7 +2804,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
       write(msg,*) 'Warning TYPE MISMATCH in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
-    endif      
+    endif
     select case (FieldType)
       case (WRF_REAL)
 ! allow coercion between double and single prec real
@@ -2771,7 +2819,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
           write(msg,*) 'Warning DOUBLE TYPE MISMATCH in ',__FILE__,', line', __LINE__
         endif
       case (WRF_INTEGER)
-        if(XType /= NF_INT)  then 
+        if(XType /= NF_INT)  then
           Status = WRF_WARN_TYPE_MISMATCH
           write(msg,*) 'Warning INTEGER TYPE MISMATCH in ',__FILE__,', line', __LINE__
         endif
@@ -2793,7 +2841,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
       stat = NFMPI_INQ_DIMNAME(NCID,VDimIDs(1),dimname)
       call netcdf_err(stat,Status)
       if(Status /= WRF_NO_ERR) then
-        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -2814,7 +2862,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
       stat = NFMPI_INQ_DIMLEN(NCID,VDimIDs(j),StoredLen_okind(j))
       call netcdf_err(stat,Status)
       if(Status /= WRF_NO_ERR) then
-        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
@@ -2837,7 +2885,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
     call GetIndices(NDim,StoredStart,Length,x1,x2,y1,y2,z1,z2)
 !jm    call GetIndices(NDim,DomainStart,DomainEnd,i1,i2,j1,j2,k1,k2)
     call GetIndices(NDim,PatchStart,PatchEnd,i1,i2,j1,j2,k1,k2)
-    
+
     StoredStart(1:NDim) = PatchStart(1:NDim)
     call ExtOrder(MemoryOrder,StoredStart,Status)
 
@@ -2853,7 +2901,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
     call FieldIO('read',DataHandle,DateStr,StoredStart,Length,MemoryOrder, &
                   FieldType,NCID,VarID,XField,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'Warning Status = ',Status,' in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'Warning Status = ',Status,' in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -2869,7 +2917,7 @@ subroutine ext_pnc_read_field(DataHandle,DateStr,Var,Field,FieldType,Comm,  &
     endif
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   DH%first_operation  = .FALSE.
@@ -2937,7 +2985,7 @@ subroutine ext_pnc_set_time(DataHandle, DateStr, Status)
 
   call DateCheck(DateStr,Status)
   if(Status /= WRF_NO_ERR) then
-    write(msg,*) 'Warning DATE STRING ERROR in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DATE STRING ERROR in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   endif
@@ -2949,7 +2997,7 @@ subroutine ext_pnc_set_time(DataHandle, DateStr, Status)
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     Status = WRF_WARN_FILE_NOT_COMMITTED
@@ -2957,7 +3005,7 @@ subroutine ext_pnc_set_time(DataHandle, DateStr, Status)
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ) then
     do i=1,MaxTimes
@@ -2974,7 +3022,7 @@ subroutine ext_pnc_set_time(DataHandle, DateStr, Status)
     Status = WRF_NO_ERR
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   return
@@ -2998,15 +3046,15 @@ subroutine ext_pnc_get_next_time(DataHandle, DateStr, Status)
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     Status = WRF_WARN_DRYRUN_READ
-    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ .OR. DH%FileStatus == WRF_FILE_OPENED_FOR_UPDATE ) then
     if(DH%CurrentTime >= DH%NumberTimes) then
@@ -3021,7 +3069,7 @@ subroutine ext_pnc_get_next_time(DataHandle, DateStr, Status)
     Status = WRF_NO_ERR
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   return
@@ -3045,15 +3093,15 @@ subroutine ext_pnc_get_previous_time(DataHandle, DateStr, Status)
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     Status = WRF_WARN_DRYRUN_READ
-    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ) then
     if(DH%CurrentTime.GT.0) then
@@ -3064,7 +3112,7 @@ subroutine ext_pnc_get_previous_time(DataHandle, DateStr, Status)
     Status = WRF_NO_ERR
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   return
@@ -3091,15 +3139,15 @@ subroutine ext_pnc_get_next_var(DataHandle, VarName, Status)
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     Status = WRF_WARN_DRYRUN_READ
-    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ .OR. DH%FileStatus == WRF_FILE_OPENED_FOR_UPDATE) then
 
@@ -3112,7 +3160,7 @@ subroutine ext_pnc_get_next_var(DataHandle, VarName, Status)
     Status  = WRF_NO_ERR
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   return
@@ -3132,8 +3180,8 @@ subroutine ext_pnc_end_of_frame(DataHandle, Status)
   return
 end subroutine ext_pnc_end_of_frame
 
-! NOTE:  For scalar variables NDim is set to zero and DomainStart and 
-! NOTE:  DomainEnd are left unmodified.  
+! NOTE:  For scalar variables NDim is set to zero and DomainStart and
+! NOTE:  DomainEnd are left unmodified.
 subroutine ext_pnc_get_var_info(DataHandle,Name,NDim,MemoryOrder,Stagger,DomainStart,DomainEnd,WrfType,Status)
   use wrf_data_pnc
   use ext_pnc_support_routines
@@ -3163,81 +3211,81 @@ subroutine ext_pnc_get_var_info(DataHandle,Name,NDim,MemoryOrder,Stagger,DomainS
   endif
   if(DH%FileStatus == WRF_FILE_NOT_OPENED) then
     Status = WRF_WARN_FILE_NOT_OPENED
-    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning FILE NOT OPENED in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   elseif(DH%FileStatus == WRF_FILE_OPENED_NOT_COMMITTED) then
     Status = WRF_WARN_DRYRUN_READ
-    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning DRYRUN READ in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_WRITE) then
     Status = WRF_WARN_READ_WONLY_FILE
-    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Warning READ WRITE ONLY FILE in ',__FILE__,', line', __LINE__
     call wrf_debug ( WARN , TRIM(msg))
     return
   elseif(DH%FileStatus == WRF_FILE_OPENED_FOR_READ .OR. DH%FileStatus == WRF_FILE_OPENED_FOR_UPDATE) then
     stat = NFMPI_INQ_VARID(DH%NCID,Name,VarID)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
     stat = NFMPI_INQ_VARTYPE(DH%NCID,VarID,XType)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
     stat = NFMPI_GET_ATT_INT(DH%NCID,VarID,'FieldType',WrfType)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
     select case (XType)
       case (NF_BYTE)
         Status = WRF_WARN_BAD_DATA_TYPE
-        write(msg,*) 'Warning BYTE IS BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning BYTE IS BAD DATA TYPE in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       case (NF_CHAR)
         Status = WRF_WARN_BAD_DATA_TYPE
-        write(msg,*) 'Warning CHAR IS BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning CHAR IS BAD DATA TYPE in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       case (NF_SHORT)
         Status = WRF_WARN_BAD_DATA_TYPE
-        write(msg,*) 'Warning SHORT IS BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning SHORT IS BAD DATA TYPE in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       case (NF_INT)
         if(WrfType /= WRF_INTEGER .and. WrfType /= WRF_LOGICAL) then
           Status = WRF_WARN_BAD_DATA_TYPE
-          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__
           call wrf_debug ( WARN , TRIM(msg))
           return
         endif
       case (NF_FLOAT)
         if(WrfType /= WRF_REAL) then
           Status = WRF_WARN_BAD_DATA_TYPE
-          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__
           call wrf_debug ( WARN , TRIM(msg))
           return
         endif
       case (NF_DOUBLE)
         if(WrfType /= WRF_DOUBLE) then
           Status = WRF_WARN_BAD_DATA_TYPE
-          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__ 
+          write(msg,*) 'Warning BAD DATA TYPE in ',__FILE__,', line', __LINE__
           call wrf_debug ( WARN , TRIM(msg))
           return
         endif
       case default
         Status = WRF_WARN_DATA_TYPE_NOT_FOUND
-        write(msg,*) 'Warning DATA TYPE NOT FOUND in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'Warning DATA TYPE NOT FOUND in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
     end select
@@ -3245,7 +3293,7 @@ subroutine ext_pnc_get_var_info(DataHandle,Name,NDim,MemoryOrder,Stagger,DomainS
     stat = NFMPI_GET_ATT_TEXT(DH%NCID,VarID,'MemoryOrder',MemoryOrder)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -3258,7 +3306,7 @@ subroutine ext_pnc_get_var_info(DataHandle,Name,NDim,MemoryOrder,Stagger,DomainS
     stat = NFMPI_INQ_VARDIMID(DH%NCID,VarID,VDimIDs)
     call netcdf_err(stat,Status)
     if(Status /= WRF_NO_ERR) then
-      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+      write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
       call wrf_debug ( WARN , TRIM(msg))
       return
     endif
@@ -3267,14 +3315,14 @@ subroutine ext_pnc_get_var_info(DataHandle,Name,NDim,MemoryOrder,Stagger,DomainS
       stat = NFMPI_INQ_DIMLEN(DH%NCID,VDimIDs(j),DomainEnd(j))
       call netcdf_err(stat,Status)
       if(Status /= WRF_NO_ERR) then
-        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+        write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
         call wrf_debug ( WARN , TRIM(msg))
         return
       endif
     enddo
   else
     Status = WRF_ERR_FATAL_BAD_FILE_STATUS
-    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__ 
+    write(msg,*) 'Fatal error BAD FILE STATUS in ',__FILE__,', line', __LINE__
     call wrf_debug ( FATAL , msg)
   endif
   return
@@ -3286,11 +3334,11 @@ subroutine ext_pnc_warning_str( Code, ReturnString, Status)
   implicit none
 #  include "pnetcdf.inc"
   include 'wrf_status_codes.h'
-  
+
   integer  , intent(in)  ::Code
   character *(*), intent(out) :: ReturnString
   integer, intent(out) ::Status
-  
+
   SELECT CASE (Code)
   CASE (0)
       ReturnString='No error'
@@ -3514,7 +3562,7 @@ subroutine ext_pnc_error_str( Code, ReturnString, Status)
       return
   CASE DEFAULT
       ReturnString= 'This error code is not supported or handled directly by WRF and NetCDF. &
-      & Might be an erroneous number, or specific to an i/o package other than NetCDF; you may need & 
+      & Might be an erroneous number, or specific to an i/o package other than NetCDF; you may need &
       & to be calling a package-specific routine to return a message for this error code.'
       Status=WRF_NO_ERR
   END SELECT
@@ -3540,7 +3588,7 @@ subroutine ext_pnc_end_independent_mode(DataHandle, Status)
 
   call netcdf_err(stat,Status)
   if(Status /= WRF_NO_ERR) then
-     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
      call wrf_debug ( WARN , TRIM(msg))
   endif
 
@@ -3562,7 +3610,7 @@ subroutine ext_pnc_start_independent_mode(DataHandle, Status)
   stat = NFMPI_BEGIN_INDEP_DATA(DH%NCID)
   call netcdf_err(stat,Status)
   if(Status /= WRF_NO_ERR) then
-     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__ 
+     write(msg,*) 'NetCDF error in ',__FILE__,', line', __LINE__
      call wrf_debug ( WARN , TRIM(msg))
   endif
 
